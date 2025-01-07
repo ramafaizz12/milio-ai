@@ -1,0 +1,21 @@
+
+> isomorphic-furyroad@0.0.1 start E:\INFORMATIKA\Project React\isomorphic\apps\isomorphic
+> next start
+
+ ⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1904:16)
+    at listenInCluster (node:net:1961:12)
+    at Server.listen (node:net:2063:7)
+    at E:\INFORMATIKA\Project React\isomorphic\node_modules\.pnpm\next@14.2.15_@babel+core@7.24.5_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\server\lib\start-server.js:280:16
+    at new Promise (<anonymous>)
+    at startServer (E:\INFORMATIKA\Project React\isomorphic\node_modules\.pnpm\next@14.2.15_@babel+core@7.24.5_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\server\lib\start-server.js:191:11)
+    at Module.nextStart (E:\INFORMATIKA\Project React\isomorphic\node_modules\.pnpm\next@14.2.15_@babel+core@7.24.5_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\cli\next-start.js:25:40)
+    at E:\INFORMATIKA\Project React\isomorphic\node_modules\.pnpm\next@14.2.15_@babel+core@7.24.5_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\bin\next:105:856 {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+ ELIFECYCLE  Command failed with exit code 1.
