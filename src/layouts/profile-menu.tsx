@@ -5,6 +5,7 @@ import cn from '@core/utils/class-names';
 import { routes } from '@/config/routes';
 import { Logout } from 'libs/api-client/auth';
 import Link from 'next/link';
+import { getUser } from 'libs/api-client/user_service';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -18,6 +19,16 @@ export default function ProfileMenu({
   avatarClassName?: string;
   username?: boolean;
 }) {
+  // Ambil data user
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userData = getUser();
+    if (userData) {
+      setUser(userData);
+    }
+  }, []);
+
   return (
     <ProfileMenuPopover>
       <Popover.Trigger>
@@ -28,20 +39,23 @@ export default function ProfileMenu({
           )}
         >
           <Avatar
-            src="https://isomorphic-furyroad.s3.amazonaws.com/public/avatars/avatar-11.webp"
-            name="John Doe"
+            src={
+              user?.avatar ||
+              'https://isomorphic-furyroad.s3.amazonaws.com/public/avatars/avatar-11.webp'
+            }
+            name={user?.email || 'John Doe'}
             className={cn('!h-9 w-9 sm:!h-10 sm:!w-10', avatarClassName)}
           />
           {!!username && (
             <span className="username hidden text-gray-200 dark:text-gray-700 md:inline-flex">
-              Hi, Andry
+              Hi, {user?.email || 'User'}
             </span>
           )}
         </button>
       </Popover.Trigger>
 
       <Popover.Content className="z-[9999] p-0 dark:bg-gray-100 [&>svg]:dark:fill-gray-100">
-        <DropdownMenu />
+        <DropdownMenu user={user} />
       </Popover.Content>
     </ProfileMenuPopover>
   );
@@ -68,10 +82,6 @@ function ProfileMenuPopover({ children }: React.PropsWithChildren<{}>) {
 }
 
 const menuItems = [
-  // {
-  //   name: 'My Profile',
-  //   href: routes.profile,
-  // },
   {
     name: 'Account Settings',
     href: routes.forms.profileSettings,
@@ -82,7 +92,7 @@ const menuItems = [
   },
 ];
 
-function DropdownMenu() {
+function DropdownMenu({ user }: { user: any }) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -99,14 +109,19 @@ function DropdownMenu() {
     <div className="w-64 text-left rtl:text-right">
       <div className="flex items-center border-b border-gray-300 px-6 pb-5 pt-6">
         <Avatar
-          src="https://isomorphic-furyroad.s3.amazonaws.com/public/avatars/avatar-11.webp"
-          name="Albert Flores"
+          src={
+            user?.avatar ||
+            'https://isomorphic-furyroad.s3.amazonaws.com/public/avatars/avatar-11.webp'
+          }
+          name={user?.email ? user.email.split('@')[0] : 'User'}
         />
         <div className="ms-3">
           <Title as="h6" className="font-semibold">
-            Albert Flores
+            {user?.email ? user.email.split('@')[0] : 'User'}
           </Title>
-          <Text className="text-gray-600">flores@doe.io</Text>
+          <Text className="text-gray-600">
+            {user?.email || 'user@example.com'}
+          </Text>
         </div>
       </div>
       <div className="grid px-3.5 py-3.5 font-medium text-gray-700">
@@ -124,7 +139,7 @@ function DropdownMenu() {
         <Button
           className="h-auto w-full justify-start p-0 font-medium text-gray-700 outline-none focus-within:text-gray-600 hover:text-gray-900 focus-visible:ring-0"
           variant="text"
-          onClick={handleLogout} // Panggil handleLogout
+          onClick={handleLogout}
         >
           Sign Out
         </Button>

@@ -20,14 +20,13 @@ const initialValues: LoginSchema = {
 
 export default function SignInForm() {
   //TODO: why we need to reset it here
+  const [loading, setLoading] = useState(false);
   const [reset, setReset] = useState({});
   const router = useRouter();
 
   const onSubmit: SubmitHandler<LoginSchema> = async (data) => {
-    console.log(data);
-    // signIn('credentials', {
-    //   ...data,
-    // });
+    setLoading(true);
+
     try {
       const response = await Signin(data.email, data.password);
       if (response.status === 200) {
@@ -39,6 +38,7 @@ export default function SignInForm() {
     } catch (error) {
       toast.error(<Text>Error, Terjadi Kesalahan</Text>);
     }
+    setLoading(false);
 
     // setReset({ email: "", password: "", isRememberMe: false });
   };
@@ -89,9 +89,14 @@ export default function SignInForm() {
                 Forget Password?
               </Link>
             </div>
-            <Button className="w-full" type="submit" size="lg">
-              <span>Sign in</span>{' '}
-              <PiArrowRightBold className="ms-2 mt-0.5 h-6 w-6" />
+            <Button
+              className="w-full"
+              type="submit"
+              size="lg"
+              isLoading={loading}
+            >
+              <span>{loading ? 'Signing Up...' : 'Get Started'}</span>{' '}
+              {!loading && <PiArrowRightBold className="ms-2 mt-0.5 h-5 w-5" />}
             </Button>
           </div>
         )}

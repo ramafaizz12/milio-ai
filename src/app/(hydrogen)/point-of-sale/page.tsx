@@ -12,14 +12,14 @@ export const metadata = {
 };
 
 const pageHeader = {
-  title: 'Point of Sale (POS)',
+  title: 'Billings',
   breadcrumb: [
     {
       href: routes.eCommerce.dashboard,
       name: 'Home',
     },
     {
-      name: 'Point of Sale',
+      name: 'Billings',
     },
   ],
 };

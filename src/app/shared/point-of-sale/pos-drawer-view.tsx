@@ -100,7 +100,7 @@ export default function POSDrawerView({
   );
 }
 
-const TAX_PERCENTAGE = 5;
+const TAX_PERCENTAGE = 0;
 
 export function PriceCalculation() {
   const { items } = useCart();

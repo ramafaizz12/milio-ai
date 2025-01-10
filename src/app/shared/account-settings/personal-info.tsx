@@ -6,6 +6,7 @@ import { SubmitHandler, Controller } from 'react-hook-form';
 import { PiClock, PiEnvelopeSimple } from 'react-icons/pi';
 import { Form } from '@core/ui/form';
 import { Loader, Text, Input } from 'rizzui';
+import { getUser } from 'libs/api-client/user_service';
 import FormGroup from '@/app/shared/form-group';
 import FormFooter from '@core/components/form-footer';
 import {
@@ -31,6 +32,7 @@ const QuillEditor = dynamic(() => import('@core/ui/quill-editor'), {
 });
 
 export default function PersonalInfoView() {
+  const user = getUser();
   const onSubmit: SubmitHandler<PersonalInfoFormTypes> = (data) => {
     toast.success(<Text as="b">Successfully added!</Text>);
     console.log('Profile settings data ->', {
@@ -59,7 +61,7 @@ export default function PersonalInfoView() {
             />
 
             <div className="mb-10 grid gap-7 divide-y divide-dashed divide-gray-200 @2xl:gap-9 @3xl:gap-11">
-              <FormGroup
+              {/* <FormGroup
                 title="Name"
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
               >
@@ -75,7 +77,7 @@ export default function PersonalInfoView() {
                   error={errors.last_name?.message}
                   className="flex-grow"
                 />
-              </FormGroup>
+              </FormGroup> */}
 
               <FormGroup
                 title="Email Address"
@@ -83,17 +85,18 @@ export default function PersonalInfoView() {
               >
                 <Input
                   className="col-span-full"
+                  disabled
                   prefix={
                     <PiEnvelopeSimple className="h-6 w-6 text-gray-500" />
                   }
                   type="email"
-                  placeholder="georgia.young@example.com"
+                  placeholder={user?.email || 'John Doe'}
                   {...register('email')}
                   error={errors.email?.message}
                 />
               </FormGroup>
 
-              <FormGroup
+              {/* <FormGroup
                 title="Your Photo"
                 description="This will be displayed on your profile."
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
@@ -106,9 +109,9 @@ export default function PersonalInfoView() {
                     error={errors?.avatar?.message as string}
                   />
                 </div>
-              </FormGroup>
+              </FormGroup> */}
 
-              <FormGroup
+              {/* <FormGroup
                 title="Role"
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
               >
@@ -132,9 +135,9 @@ export default function PersonalInfoView() {
                     />
                   )}
                 />
-              </FormGroup>
+              </FormGroup> */}
 
-              <FormGroup
+              {/* <FormGroup
                 title="Country"
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
               >
@@ -159,9 +162,9 @@ export default function PersonalInfoView() {
                     />
                   )}
                 />
-              </FormGroup>
+              </FormGroup> */}
 
-              <FormGroup
+              {/* <FormGroup
                 title="Timezone"
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
               >
@@ -187,9 +190,9 @@ export default function PersonalInfoView() {
                     />
                   )}
                 />
-              </FormGroup>
+              </FormGroup> */}
 
-              <FormGroup
+              {/* <FormGroup
                 title="Bio"
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
               >
@@ -205,9 +208,9 @@ export default function PersonalInfoView() {
                     />
                   )}
                 />
-              </FormGroup>
+              </FormGroup> */}
 
-              <FormGroup
+              {/* <FormGroup
                 title="Portfolio Projects"
                 description="Share a few snippets of your work"
                 className="pt-7 @2xl:pt-9 @3xl:grid-cols-12 @3xl:pt-11"
@@ -220,14 +223,14 @@ export default function PersonalInfoView() {
                     error={errors?.portfolios?.message as string}
                   />
                 </div>
-              </FormGroup>
+              </FormGroup> */}
             </div>
 
-            <FormFooter
+            {/* <FormFooter
               // isLoading={isLoading}
               altBtnText="Cancel"
               submitBtnText="Save"
-            />
+            /> */}
           </>
         );
       }}

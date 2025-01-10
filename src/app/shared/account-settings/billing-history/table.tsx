@@ -2,6 +2,8 @@
 
 import { billingHistoryData } from '@/data/billing-history';
 import Table from '@core/components/table';
+import { useEffect } from 'react';
+import { useSubcription } from '@/app/api/plan/useSubcription';
 import { useTanStackTable } from '@core/components/table/custom/use-TanStack-Table';
 import TableFooter from '@core/components/table/footer';
 import TablePagination from '@core/components/table/pagination';
@@ -14,8 +16,9 @@ export default function BillingHistoryTable({
 }: {
   className?: string;
 }) {
+  const { data, isLoading } = useSubcription();
   const { table, setData } = useTanStackTable<BillingHistoryDataType>({
-    tableData: billingHistoryData,
+    tableData: data || [],
     columnConfig: billingHistoryColumns,
     options: {
       initialState: {
@@ -37,12 +40,18 @@ export default function BillingHistoryTable({
       enableColumnResizing: false,
     },
   });
-
+  useEffect(() => {}, []);
   return (
     <div className={className}>
-      <Table table={table} variant="modern" />
-      <TableFooter table={table} />
-      <TablePagination table={table} className="mt-4" />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <Table table={table} variant="modern" />
+          <TableFooter table={table} />
+          <TablePagination table={table} className="mt-4" />
+        </>
+      )}
     </div>
   );
 }

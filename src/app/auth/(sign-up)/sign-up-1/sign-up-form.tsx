@@ -6,24 +6,35 @@ import { SubmitHandler } from 'react-hook-form';
 import { PiArrowRightBold } from 'react-icons/pi';
 import { Password, Checkbox, Button, Input, Text } from 'rizzui';
 import { Form } from '@core/ui/form';
+import { Signup } from 'libs/api-client/auth';
 import { routes } from '@/config/routes';
 import { SignUpSchema, signUpSchema } from '@/validators/signup.schema';
 
 const initialValues = {
-  firstName: '',
-  lastName: '',
   email: '',
   password: '',
-  confirmPassword: '',
   isAgreed: false,
 };
 
 export default function SignUpForm() {
   const [reset, setReset] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit: SubmitHandler<SignUpSchema> = (data) => {
+  const onSubmit: SubmitHandler<SignUpSchema> = async (data) => {
     console.log(data);
-    setReset({ ...initialValues, isAgreed: false });
+    setLoading(true); // Set loading state
+    try {
+      // Make an API call to signup endpoint
+      const response = await Signup(data.email, data.password);
+
+      console.log('Signup successful:', response.data);
+      setReset({ ...initialValues, isAgreed: false });
+      alert('Signup successful!');
+    } catch (error) {
+      console.error('Signup failed:', error);
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
   return (
@@ -39,26 +50,6 @@ export default function SignUpForm() {
         {({ register, formState: { errors } }) => (
           <div className="flex flex-col gap-x-4 gap-y-5 md:grid md:grid-cols-2 lg:gap-5">
             <Input
-              type="text"
-              size="lg"
-              label="First Name"
-              placeholder="Enter your first name"
-              className="[&>label>span]:font-medium"
-              inputClassName="text-sm"
-              {...register('firstName')}
-              error={errors.firstName?.message}
-            />
-            <Input
-              type="text"
-              size="lg"
-              label="Last Name"
-              placeholder="Enter your last name"
-              className="[&>label>span]:font-medium"
-              inputClassName="text-sm"
-              {...register('lastName')}
-              error={errors.lastName?.message}
-            />
-            <Input
               type="email"
               size="lg"
               label="Email"
@@ -72,19 +63,10 @@ export default function SignUpForm() {
               label="Password"
               placeholder="Enter your password"
               size="lg"
-              className="[&>label>span]:font-medium"
+              className="col-span-2 [&>label>span]:font-medium"
               inputClassName="text-sm"
               {...register('password')}
               error={errors.password?.message}
-            />
-            <Password
-              label="Confirm Password"
-              placeholder="Enter confirm password"
-              size="lg"
-              className="[&>label>span]:font-medium"
-              inputClassName="text-sm"
-              {...register('confirmPassword')}
-              error={errors.confirmPassword?.message}
             />
             <div className="col-span-2 flex items-start">
               <Checkbox
@@ -110,9 +92,14 @@ export default function SignUpForm() {
                 }
               />
             </div>
-            <Button size="lg" type="submit" className="col-span-2 mt-2">
-              <span>Get Started</span>{' '}
-              <PiArrowRightBold className="ms-2 mt-0.5 h-5 w-5" />
+            <Button
+              size="lg"
+              type="submit"
+              className="col-span-2 mt-2"
+              disabled={loading} // Disable button while loading
+            >
+              <span>{loading ? 'Signing Up...' : 'Get Started'}</span>{' '}
+              {!loading && <PiArrowRightBold className="ms-2 mt-0.5 h-5 w-5" />}
             </Button>
           </div>
         )}

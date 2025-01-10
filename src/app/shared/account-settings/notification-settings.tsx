@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePlans } from '@/app/api/plan/usePlan';
 import HorizontalFormBlockWrapper from '@/app/shared/account-settings/horiozontal-block';
 import {
   Button,
@@ -48,7 +49,8 @@ const summaryOptions = [
 export default function NotificationSettingsView() {
   const [values, setValues] = useState<string[]>([]);
   const [value, setValue] = useState('');
-
+  const data = usePlans();
+  console.log(data);
   return (
     <div className="@container">
       <HorizontalFormBlockWrapper

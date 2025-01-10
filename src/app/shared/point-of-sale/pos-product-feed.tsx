@@ -3,50 +3,45 @@
 import { useState } from 'react';
 import { Empty, SearchNotFoundIcon, Button } from 'rizzui';
 import ProductClassicCard from '@core/components/cards/product-classic-card';
-import { posFilterValue } from '@/app/shared/point-of-sale/pos-search';
 import { useAtomValue } from 'jotai';
-import { posData } from '@/data/pos-data';
-import hasSearchedParams from '@core/utils/has-searched-params';
-import shuffle from 'lodash/shuffle';
+import { selectedCategoryAtom } from './pos-category-filters';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { useFilteredPlans } from '@/app/api/plan/usePlan';
 
 const PER_PAGE = 12;
 
 export default function POSProductsFeed() {
-  const [isLoading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(PER_PAGE);
-  const searchText = useAtomValue(posFilterValue);
+  const selectedCategory = useAtomValue(selectedCategoryAtom); // Ambil kategori terpilih
 
-  let productItemsFiltered = [...posData].sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+  const { data: products = [], isLoading } = useFilteredPlans();
 
-  if (searchText.length > 0) {
-    productItemsFiltered = posData.filter((item: any) => {
-      const label = item.name;
-      return (
-        label.match(searchText.toLowerCase()) ||
-        (label.toLowerCase().match(searchText.toLowerCase()) && label)
-      );
-    });
-  }
+  // Filter produk berdasarkan kategori terpilih
+  const filteredProducts = selectedCategory
+    ? products.filter((product) => product.duration === selectedCategory)
+    : products;
 
-  productItemsFiltered = hasSearchedParams()
-    ? shuffle(productItemsFiltered)
-    : productItemsFiltered;
+  // function handleLoadMore() {
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //     setNextPage(nextPage + PER_PAGE);
+  //   }, 600);
+  // }
+  const totalPlansLength = filteredProducts?.reduce((total, product) => {
+    return total + (product.plans?.length || 0); // Tambahkan panjang setiap plans
+  }, 0);
 
-  function handleLoadMore() {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setNextPage(nextPage + PER_PAGE);
-    }, 600);
+  if (isLoading) {
+    return <p>Loading plans...</p>;
   }
 
   return (
     <>
-      {productItemsFiltered?.length ? (
+      {totalPlansLength ? (
         <div className="grid grid-cols-2 gap-x-4 gap-y-6 @md:grid-cols-[repeat(auto-fill,minmax(210px,1fr))] @xl:gap-x-6 @xl:gap-y-12 @4xl:grid-cols-[repeat(auto-fill,minmax(270px,1fr))]">
-          {productItemsFiltered
+          {filteredProducts[0].plans
             ?.slice(0, nextPage)
             ?.map((product) => (
               <ProductClassicCard key={product.id} product={product} />
@@ -60,11 +55,9 @@ export default function POSProductsFeed() {
         />
       )}
 
-      {nextPage < productItemsFiltered?.length ? (
+      {nextPage < filteredProducts?.length ? (
         <div className="mb-4 mt-5 flex flex-col items-center xs:pt-6 sm:pt-8">
-          <Button isLoading={isLoading} onClick={() => handleLoadMore()}>
-            Load More
-          </Button>
+          <Button isLoading={isLoading}>Load More</Button>
         </div>
       ) : null}
     </>

@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SubmitHandler, Controller } from 'react-hook-form';
 import { PiDesktop } from 'react-icons/pi';
 import { Form } from '@core/ui/form';
+import { getUser } from 'libs/api-client/user_service';
+import { Changepassword } from 'libs/api-client/auth';
+import { toast } from 'react-hot-toast';
 import { Button, Password, Title, Text } from 'rizzui';
 import cn from '@core/utils/class-names';
 import { ProfileHeader } from '@/app/shared/account-settings/profile-settings';
@@ -19,20 +22,39 @@ export default function PasswordSettingsView({
   settings?: PasswordFormTypes;
 }) {
   const [isLoading, setLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [reset, setReset] = useState({});
 
-  const onSubmit: SubmitHandler<PasswordFormTypes> = (data) => {
+  const onSubmit: SubmitHandler<PasswordFormTypes> = async (data) => {
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const response = await Changepassword(
+        data.currentPassword,
+        data.newPassword
+      );
+      if (response.status == 200) {
+        toast.success(<Text>Password Updated</Text>);
+        setReset({
+          currentPassword: '',
+          newPassword: '',
+          confirmedPassword: '',
+        });
+      }
+    } catch (error: any) {
+      console.error('Error updating password:', error.message);
+      alert(error.message || 'An error occurred while updating the password.');
+    } finally {
       setLoading(false);
-      console.log('Password settings data ->', data);
-      setReset({
-        currentPassword: '',
-        newPassword: '',
-        confirmedPassword: '',
-      });
-    }, 600);
+    }
   };
+
+  useEffect(() => {
+    const userData = getUser();
+    if (userData) {
+      setUser(userData);
+    }
+  }, []);
 
   return (
     <>
@@ -52,8 +74,8 @@ export default function PasswordSettingsView({
           return (
             <>
               <ProfileHeader
-                title="Olivia Rhye"
-                description="olivia@example.com"
+                title={user?.email ? user.email.split('@')[0] : 'User'}
+                description={user?.email || 'user@example.com'}
               />
 
               <div className="mx-auto w-full max-w-screen-2xl">
@@ -119,7 +141,7 @@ export default function PasswordSettingsView({
           );
         }}
       </Form>
-      <LoggedDevices className="mt-10" />
+      {/* <LoggedDevices className="mt-10" /> */}
     </>
   );
 }

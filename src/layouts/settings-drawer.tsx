@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from 'rizzui';
+import { useDrawer } from '@/app/shared/drawer-views/use-drawer';
 import SimpleBar from '@core/ui/simplebar';
-import EnvatoIcon from '@core/components/icons/envato';
 import LayoutSwitcher from '@/layouts/layout-switcher';
 import ColorOptions from '@/layouts/settings/color-options';
 import AppDirection from '@/layouts/settings/app-direction';
@@ -26,16 +26,17 @@ export default function SettingsDrawer() {
 }
 
 function SettingsFooterButton() {
+  const drawer = useDrawer();
   return (
-    <a
-      href="https://themeforest.net/item/isomorphic-react-redux-admin-dashboard/20262330?ref=redqteam"
-      target="_blank"
-      className="grid grid-cols-1 border-t border-muted px-6 pt-4"
-    >
-      <Button size="lg" as="span" className={'text-base font-semibold'}>
-        <EnvatoIcon className="me-2 h-5 w-5" />
-        <span className="">Purchase for $24</span>
+    <div className="grid grid-cols-1 border-t border-muted px-6 pt-4">
+      <Button
+        size="lg"
+        as="span"
+        className="text-base font-semibold"
+        onClick={drawer.closeDrawer}
+      >
+        <span>Close</span>
       </Button>
-    </a>
+    </div>
   );
 }

@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from 'rizzui';
 import cn from '@core/utils/class-names';
 import { useFilterControls } from '@core/hooks/use-filter-control';
-import {
-  filterOptions,
-  initialState,
-} from '@/app/shared/point-of-sale/pos-category-utils';
+import { initialState } from '@/app/shared/point-of-sale/pos-category-utils';
 import { useElementRePosition } from '@core/hooks/use-element-reposition';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { useAtom } from 'jotai';
+import { selectedCategoryAtom } from './pos-category-filters';
+import { usePlans, useFilteredPlans } from '@/app/api/plan/usePlan';
 
 function getIndexByValue(arr: any[], value: string) {
   return arr.findIndex((item) => item.value === value);
@@ -15,6 +17,7 @@ function getIndexByValue(arr: any[], value: string) {
 export default function POSProductCategory() {
   const ref = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useAtom(selectedCategoryAtom);
   const { state, applyFilter, reset } = useFilterControls<
     typeof initialState,
     any
@@ -24,23 +27,31 @@ export default function POSProductCategory() {
     activeTab: activeIndex,
   });
 
+  const { data: categories, isLoading } = useFilteredPlans();
+
   function handleReset(i: number) {
     reset();
     setActiveIndex(i);
+    setSelectedCategory(null);
   }
 
   function handleFilter(value: string, i: number) {
     applyFilter('filter', value);
     setActiveIndex(i);
+    setSelectedCategory(value);
   }
 
   useEffect(() => {
     if (!state) {
       setActiveIndex(0);
-    } else {
-      setActiveIndex(getIndexByValue(filterOptions, state['filter']) + 1);
+    } else if (categories) {
+      setActiveIndex(getIndexByValue(categories, state['filter']) + 1);
     }
-  }, [state]);
+  }, [state, categories]);
+
+  if (isLoading) {
+    return <p>Loading categories...</p>;
+  }
 
   return (
     <>
@@ -55,25 +66,21 @@ export default function POSProductCategory() {
         >
           All Items
         </Button>
-        {filterOptions.map((option, idx) => {
-          const Icon = option.icon;
-          return (
-            <Button
-              key={option.id + option.value}
-              variant={state['filter'] === option.value ? 'solid' : 'outline'}
-              className={cn(
-                'inline-flex shrink-0 gap-1.5 scroll-smooth focus-visible:border-0 focus-visible:ring-0 active:ring-0 focus-visible:enabled:border-0',
-                state['filter'] === option.value && 'relative z-10'
-              )}
-              onClick={() => handleFilter(option.value, idx + 1)}
-            >
-              <span>
-                <Icon className="h-5 w-5" />
-              </span>
-              {option.name}
-            </Button>
-          );
-        })}
+        {categories?.map((category, idx) => (
+          <Button
+            key={category.duration}
+            variant={
+              state['filter'] === category.duration ? 'solid' : 'outline'
+            }
+            className={cn(
+              'inline-flex shrink-0 gap-1.5 scroll-smooth focus-visible:border-0 focus-visible:ring-0 active:ring-0 focus-visible:enabled:border-0',
+              state['filter'] === category.duration && 'relative z-10'
+            )}
+            onClick={() => handleFilter(category.duration, idx + 1)}
+          >
+            <span>{category.duration}</span>
+          </Button>
+        ))}
       </div>
 
       <span
